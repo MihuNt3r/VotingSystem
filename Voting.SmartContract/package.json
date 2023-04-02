@@ -1,0 +1,16 @@
+{
+  "name": "voting.smartcontract",
+  "version": "1.0.0",
+  "description": "Hardhat project for creating and testing of Smart Contract",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"recompile": "npx hardhat clean && npx hardhat compile"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.13.0"
+  }
+}
