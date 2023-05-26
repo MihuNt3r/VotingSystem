@@ -12,8 +12,9 @@ contract Voting {
 
     enum VotingState {
         Started,
+        InProgress,
         FinishedWithWinner,
-        FinishedWithTwoOrMoreWinners,
+        Draw,
         NotEnoughVotes
     }
     struct VotingProposal {
