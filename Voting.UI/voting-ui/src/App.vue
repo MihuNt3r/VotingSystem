@@ -32,16 +32,16 @@
             class="elevation-1"
           ></v-data-table>
         </v-col>
-        <!-- <v-col cols="2">
-          <v-btn @click="createVoting" color="purple" rounded>
-            Create Voting
+        <v-col cols="2">
+          <v-btn @click="voteFor3Proposal" color="purple" rounded>
+            Vote for 3 Proposal
           </v-btn>
         </v-col>
         <v-col cols="2">
           <v-btn @click="logFirstVotingInfo" color="purple" rounded>
             Log first voting info</v-btn
           >
-        </v-col> -->
+        </v-col>
       </v-row>
     </v-main>
   </v-app>
@@ -235,6 +235,28 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+
+    async voteFor3Proposal() {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const signer = provider.getSigner();
+        const votingContract = new ethers.Contract(
+          this.contractAddress,
+          this.contractAbi,
+          signer
+        );
+
+        const voteTxn = await votingContract.vote(0, 3);
+
+        console.log({ voteTxn });
+
+        await voteTxn.wait();
+
+        console.log("success");
       }
     },
   },
