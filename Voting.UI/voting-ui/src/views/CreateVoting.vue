@@ -38,11 +38,6 @@
             <v-row justify="center" class="mb-3 mt-1 text-center">
               <v-col cols="12">
                 <v-card-title> Proposals</v-card-title>
-                <v-btn
-                  icon="fas fa-plus"
-                  color="purple"
-                  @click="addProposal"
-                ></v-btn>
               </v-col>
               <v-col
                 v-for="(proposal, index) in proposals"
@@ -60,6 +55,13 @@
                   @click:append="deleteProposal(proposal.id)"
                 ></v-text-field>
               </v-col>
+              <v-col cols="9">
+                <v-btn
+                  icon="fas fa-plus"
+                  color="purple"
+                  @click="addProposal"
+                ></v-btn>
+              </v-col>
             </v-row>
           </v-card>
         </v-col>
@@ -74,6 +76,9 @@
 </template>
 
 <script>
+import { ethers } from "ethers";
+import abi from "../../utils/VotingEngine.json";
+
 export default {
   name: "CreateVoting",
   components: {
@@ -82,9 +87,9 @@ export default {
   data: () => ({
     votingName: "",
     votingDescription: "",
-    proposals: [{ id: 1, name: "" }],
-    firstId: 1,
-    currentLastId: 1,
+    proposals: [],
+    contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
+    contractAbi: abi.abi,
   }),
   methods: {
     addProposal() {
@@ -95,18 +100,39 @@ export default {
         (proposal) => proposal.id !== proposalId
       );
     },
-    createVoting() {
-      //   const arrayRange = (start, stop, step) =>
-      //     Array.from(
-      //       { length: (stop - start) / step + 1 },
-      //       (value, index) => start + index * step
-      //     );
+    async createVoting() {
+      try {
+        const { ethereum } = window;
 
-      //   const lastId = this.firstId + this.proposals.length - 1;
+        if (ethereum) {
+          // put this in created lifecycle hook
+          const provider = new ethers.providers.Web3Provider(ethereum, "any");
+          const signer = provider.getSigner();
+          const votingContract = new ethers.Contract(
+            this.contractAddress,
+            this.contractAbi,
+            signer
+          );
 
-      //   const ids = arrayRange(this.firstId, lastId, 1);
+          console.log(votingContract);
 
-      console.log(this.uuidv4());
+          const proposalIds = this.proposals.map((p) => p.id);
+
+          console.log(proposalIds);
+
+          const createVotingTxn = await votingContract.createVoting(
+            proposalIds
+          );
+
+          console.log({ createVotingTxn });
+
+          const idVoting = await createVotingTxn.wait();
+
+          console.log("success", idVoting);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     uuidv4() {
       return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>

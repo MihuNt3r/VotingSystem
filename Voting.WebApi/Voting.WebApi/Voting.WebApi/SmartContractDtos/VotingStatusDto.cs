@@ -10,7 +10,7 @@ namespace VotingWebApi.SmartContractDtos
         public BigInteger VotingId { get; set; }
         [Parameter("uint8", "", 2)]
         public byte State { get; set; }
-        [Parameter("int256", "", 3)]
-        public BigInteger WinningProposal { get; set; }
+        [Parameter("string", "", 3)]
+        public string WinningProposal { get; set; }
     }
 }

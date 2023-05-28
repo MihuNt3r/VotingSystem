@@ -135,6 +135,12 @@ contract VotingEngine {
         return proposalIds;
     }
 
+    function getLastAddedVotingId() public view returns (uint) {
+        Voting memory voting = votings[votings.length - 1];
+
+        return voting.votingId;
+    }
+
     function compare(
         string memory str1,
         string memory str2

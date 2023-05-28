@@ -16,7 +16,7 @@ namespace VotingWebApi.Controllers
     {
         private readonly VotingsRepository votingsRepository;
         private readonly Web3 web3;
-        private const string CONTRACT_ADDRESS = "0xC541a6816B3cFb3a2bD9EF99Bff629328dA8b16d";
+        private const string CONTRACT_ADDRESS = "0x74482b8FF7893dEC5Bd370637F656bE0A5025749";
 
         public VotingsController()
         {
@@ -33,10 +33,8 @@ namespace VotingWebApi.Controllers
         }
 
         [HttpGet("{idProposal}/votes")]
-        public async Task<ActionResult<int>> GetVotesByProposal([FromRoute] int idProposal)
+        public async Task<ActionResult<int>> GetVotesByProposal([FromRoute] string idProposal)
         {
-            var web3 = new Web3("https://sepolia.infura.io/v3/ccd658afb4ff4d04b1891723bae0fb49");
-
             var voteCountMessage = new VoteCountByProposalFunction
             {
                 IdProposal = idProposal
@@ -54,8 +52,6 @@ namespace VotingWebApi.Controllers
         [HttpGet("{idVoting}/state")]
         public async Task<ActionResult<int>> GetVoting([FromRoute] int idVoting)
         {
-            var web3 = new Web3("https://sepolia.infura.io/v3/ccd658afb4ff4d04b1891723bae0fb49");
-
             var votingStatusMessage = new VotingStatusFunction
             {
                 IdVoting = idVoting
@@ -68,7 +64,7 @@ namespace VotingWebApi.Controllers
                 .ConfigureAwait(false);
 
             var votingId = (int)votingInfo.VotingId;
-            var winningProposal = (int)votingInfo.WinningProposal;
+            var winningProposal = votingInfo.WinningProposal;
             var state = (VotingState)votingInfo.State;
 
             return Ok(2);
@@ -100,9 +96,17 @@ namespace VotingWebApi.Controllers
         [HttpPost("")]
         public async Task<ActionResult> CreateVoting([FromBody] CreateVotingDto createVotingDto)
         {
+            var getLastVotingAddedIdMessage = new GetLastAddedVotingIdFunction();
+
+            var queryHandler = web3.Eth.GetContractQueryHandler<GetLastAddedVotingIdFunction>();
+
+            var votingId = await queryHandler
+                .QueryAsync<int>(CONTRACT_ADDRESS, getLastVotingAddedIdMessage)
+                .ConfigureAwait(false);
+
             var voting = new Voting
             {
-                Id = createVotingDto.Id,
+                Id = votingId,
                 Name = createVotingDto.Name,
                 Description = createVotingDto.Description,
                 IsEnabled = true,

@@ -2,7 +2,7 @@
 {
     public class VotingProposal
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Proposal { get; set; }
 

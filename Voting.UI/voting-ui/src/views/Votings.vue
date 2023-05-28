@@ -45,7 +45,7 @@ export default {
 
   data: () => ({
     currentAccount: null,
-    contractAddress: "0xC541a6816B3cFb3a2bD9EF99Bff629328dA8b16d",
+    contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
     contractAbi: abi.abi,
   }),
   methods: {
