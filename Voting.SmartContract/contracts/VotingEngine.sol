@@ -12,18 +12,18 @@ contract VotingEngine {
 
     struct Voting {
         uint votingId;
-        uint[] proposalIds;
+        string[] proposalIds;
         VotingState state;
-        int winningProposal;
+        string winningProposal;
         uint winningVoteCount;
     }
 
     uint public votingsNumber;
     Voting[] public votings;
-    mapping(uint => uint) public voteCountByProposal;
+    mapping(string => uint) public voteCountByProposal;
 
     function createVoting(
-        uint[] memory proposalIds
+        string[] memory proposalIds
     ) public payable returns (uint _id) {
         require(proposalIds.length > 0, "Proposals array can't be empty");
 
@@ -34,20 +34,20 @@ contract VotingEngine {
                 votingId: votingId,
                 proposalIds: proposalIds,
                 state: VotingState.Started,
-                winningProposal: -1,
+                winningProposal: "",
                 winningVoteCount: 0
             })
         );
 
         for (uint i = 0; i < proposalIds.length; i++) {
-            uint proposalId = proposalIds[i];
+            string memory proposalId = proposalIds[i];
             voteCountByProposal[proposalId] = 0;
         }
 
         return votingId;
     }
 
-    function vote(uint votingId, uint proposalId) public payable {
+    function vote(uint votingId, string memory proposalId) public payable {
         Voting storage voting = votings[votingId];
         require(
             voting.state != VotingState.FinishedWithWinner ||
@@ -61,11 +61,11 @@ contract VotingEngine {
         voteCountByProposal[proposalId] = newVotesCount;
 
         if (newVotesCount > voting.winningVoteCount) {
-            voting.winningProposal = int(proposalId);
+            voting.winningProposal = proposalId;
             voting.winningVoteCount = newVotesCount;
             voting.state = VotingState.HasLeader;
         } else if (newVotesCount == voting.winningVoteCount) {
-            voting.winningProposal = -1; // Multiple winners
+            voting.winningProposal = ""; // Multiple winners
             voting.state = VotingState.Draw;
         }
     }
@@ -85,18 +85,16 @@ contract VotingEngine {
 
     function getVotingInfo(
         uint id
-    ) public view returns (uint, uint[] memory, VotingState, int) {
+    ) public view returns (uint, VotingState, string memory) {
         Voting memory voting = votings[id];
 
         uint votingId = voting.votingId;
-        uint[] memory proposalIds = voting.proposalIds;
         VotingState state = voting.state;
-        int winningProposal = voting.winningProposal;
+        string memory winningProposal = voting.winningProposal;
 
-        return (votingId, proposalIds, state, winningProposal);
+        return (votingId, state, winningProposal);
     }
 
-    // Maybe we can return winning proposal here
     function endVoting(uint idVoting) public payable {
         Voting storage voting = votings[idVoting];
 
@@ -105,14 +103,16 @@ contract VotingEngine {
             "Can't finish voting because no one voted yet"
         );
 
-        if (voting.winningProposal != -1) {
+        if (!compare(voting.winningProposal, "")) {
             voting.state = VotingState.FinishedWithWinner;
         } else {
             voting.state = VotingState.FinishedWithDraw;
         }
     }
 
-    function getWinningProposal(uint idVoting) public view returns (int) {
+    function getWinningProposal(
+        uint idVoting
+    ) public view returns (string memory) {
         Voting memory voting = votings[idVoting];
 
         // Can bring to method voting.isFinished
@@ -123,5 +123,24 @@ contract VotingEngine {
         );
 
         return voting.winningProposal;
+    }
+
+    function getProposalIds(
+        uint idVoting
+    ) public view returns (string[] memory) {
+        Voting memory voting = votings[idVoting];
+
+        string[] memory proposalIds = voting.proposalIds;
+
+        return proposalIds;
+    }
+
+    function compare(
+        string memory str1,
+        string memory str2
+    ) public pure returns (bool) {
+        return
+            keccak256(abi.encodePacked(str1)) ==
+            keccak256(abi.encodePacked(str2));
     }
 }

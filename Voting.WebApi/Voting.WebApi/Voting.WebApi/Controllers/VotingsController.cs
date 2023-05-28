@@ -14,13 +14,19 @@ namespace VotingWebApi.Controllers
     [Route("api/votings")]
     public class VotingsController : ControllerBase
     {
-        private readonly VotingsRepository votingsRepository = new();
+        private readonly VotingsRepository votingsRepository;
+        private readonly Web3 web3;
+        private const string CONTRACT_ADDRESS = "0xC541a6816B3cFb3a2bD9EF99Bff629328dA8b16d";
+
+        public VotingsController()
+        {
+            votingsRepository= new VotingsRepository();
+            web3 = new Web3("https://sepolia.infura.io/v3/ccd658afb4ff4d04b1891723bae0fb49");
+        }
 
         [HttpGet("{ethAddress}/balance")]
         public async Task<ActionResult<BigInteger>> GetWalletBalance([FromRoute] string ethAddress)
         {
-            var web3 = new Web3("https://sepolia.infura.io/v3/ccd658afb4ff4d04b1891723bae0fb49");
-
             var balance = await web3.Eth.GetBalance.SendRequestAsync(ethAddress);
 
             return Ok(balance.Value);
@@ -39,7 +45,7 @@ namespace VotingWebApi.Controllers
             var queryHandler = web3.Eth.GetContractQueryHandler<VoteCountByProposalFunction>();
 
             var voteCount = await queryHandler
-                .QueryAsync<int>("0x84d26fFaB939b0AF567E27e55fA3B3d2FAC9dB8b", voteCountMessage)
+                .QueryAsync<int>(CONTRACT_ADDRESS, voteCountMessage)
                 .ConfigureAwait(false);
 
             return Ok(voteCount);
@@ -58,11 +64,12 @@ namespace VotingWebApi.Controllers
             var queryHandler = web3.Eth.GetContractQueryHandler<VotingStatusFunction>();
 
             var votingInfo = await queryHandler
-                .QueryDeserializingToObjectAsync<VotingStatusDto>(votingStatusMessage, "0x84d26fFaB939b0AF567E27e55fA3B3d2FAC9dB8b")
+                .QueryDeserializingToObjectAsync<VotingStatusDto>(votingStatusMessage, CONTRACT_ADDRESS)
                 .ConfigureAwait(false);
 
             var votingId = (int)votingInfo.VotingId;
             var winningProposal = (int)votingInfo.WinningProposal;
+            var state = (VotingState)votingInfo.State;
 
             return Ok(2);
             //return Ok(voteCount);
