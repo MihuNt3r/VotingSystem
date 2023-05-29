@@ -17,6 +17,7 @@
       <v-row justify="center" class="mt-3">
         <v-col cols="5">
           <v-text-field
+            v-model="votingName"
             label="Voting Name"
             variant="outlined"
             color="purple"
@@ -26,6 +27,7 @@
         </v-col>
         <v-col cols="5">
           <v-text-field
+            v-model="votingDescription"
             label="Voting Description"
             variant="outlined"
             color="purple"
@@ -66,9 +68,15 @@
           </v-card>
         </v-col>
         <v-col cols="12" class="text-center">
-          <v-btn color="purple" rounded="xl" size="large" @click="createVoting"
-            >Create Voting</v-btn
+          <v-btn
+            color="purple"
+            rounded="xl"
+            size="large"
+            @click="createVoting"
+            :loading="createButtonLoading"
           >
+            Create Voting
+          </v-btn>
         </v-col>
       </v-row>
     </v-main>
@@ -78,6 +86,8 @@
 <script>
 import { ethers } from "ethers";
 import abi from "../../utils/VotingEngine.json";
+
+const axios = require("axios");
 
 export default {
   name: "CreateVoting",
@@ -90,6 +100,7 @@ export default {
     proposals: [],
     contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
     contractAbi: abi.abi,
+    createButtonLoading: false,
   }),
   methods: {
     addProposal() {
@@ -102,10 +113,10 @@ export default {
     },
     async createVoting() {
       try {
+        this.createButtonLoading = true;
         const { ethereum } = window;
 
         if (ethereum) {
-          // put this in created lifecycle hook
           const provider = new ethers.providers.Web3Provider(ethereum, "any");
           const signer = provider.getSigner();
           const votingContract = new ethers.Contract(
@@ -129,9 +140,26 @@ export default {
           const idVoting = await createVotingTxn.wait();
 
           console.log("success", idVoting);
+
+          const model = {
+            name: this.votingName,
+            description: this.votingDescription,
+            proposals: this.proposals.map((proposal) => ({
+              id: proposal.id,
+              proposal: proposal.name,
+            })),
+          };
+
+          console.log(model);
+
+          await axios.post("http://localhost:21682/api/votings", model);
+
+          this.$router.back();
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.createButtonLoading = false;
       }
     },
     uuidv4() {

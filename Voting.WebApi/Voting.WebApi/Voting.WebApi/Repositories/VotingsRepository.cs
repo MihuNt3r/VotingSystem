@@ -5,6 +5,7 @@ namespace VotingWebApi.Repositories
 {
     public class VotingsRepository
     {
+        private const string dbName = "VotingsDb";
         private const string collectionName = "votings";
         private readonly IMongoCollection<Voting> dbCollection;
         private readonly FilterDefinitionBuilder<Voting> filterBuilder = Builders<Voting>.Filter;
@@ -12,7 +13,7 @@ namespace VotingWebApi.Repositories
         public VotingsRepository()
         {
             var mongoClient = new MongoClient("mongodb://localhost:27017");
-            var database = mongoClient.GetDatabase("VotingsDb");
+            var database = mongoClient.GetDatabase(dbName);
             dbCollection = database.GetCollection<Voting>(collectionName);
         }
 
@@ -31,7 +32,15 @@ namespace VotingWebApi.Repositories
         public async Task<Voting> GetById(int votingId)
         {
             FilterDefinition<Voting> filter = filterBuilder.Eq(voting => voting.Id, votingId);
+
             return await dbCollection.Find(filter).SingleOrDefaultAsync();
+        }
+
+        public async Task<bool> ExistsWithId(int votingId)
+        {
+            FilterDefinition<Voting> filter = filterBuilder.Eq(voting => voting.Id, votingId);
+
+            return await dbCollection.Find(filter).AnyAsync();
         }
 
         public async Task Create(Voting voting)
@@ -52,6 +61,7 @@ namespace VotingWebApi.Repositories
             }
 
             FilterDefinition<Voting> filter = filterBuilder.Eq(existingVoting => existingVoting.Id, voting.Id);
+
             await dbCollection.ReplaceOneAsync(filter, voting);
         }
     }

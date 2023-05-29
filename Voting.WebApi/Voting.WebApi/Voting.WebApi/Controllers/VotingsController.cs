@@ -104,6 +104,11 @@ namespace VotingWebApi.Controllers
                 .QueryAsync<int>(CONTRACT_ADDRESS, getLastVotingAddedIdMessage)
                 .ConfigureAwait(false);
 
+            if (await votingsRepository.ExistsWithId(votingId))
+            {
+                throw new Exception("Voting with this Id is already exists in database");
+            }
+
             var voting = new Voting
             {
                 Id = votingId,
