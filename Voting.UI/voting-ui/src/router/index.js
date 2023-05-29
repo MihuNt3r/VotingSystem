@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Votings from "../views/Votings.vue";
 import CreateVoting from "../views/CreateVoting.vue";
+import Voting from "../views/Voting{id}.vue";
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: "/newVoting",
     name: "newVoting",
     component: CreateVoting,
+  },
+  {
+    path: "/votings/:idVoting",
+    name: "voting",
+    component: Voting,
   },
 ];
 

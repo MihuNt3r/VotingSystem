@@ -61,7 +61,7 @@ export default {
       this.$router.push({ path: "/newVoting" });
     },
     openVoting(id) {
-      console.log(id);
+      this.$router.push({ name: "voting", params: { idVoting: id } });
     },
   },
 };
