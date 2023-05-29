@@ -131,8 +131,31 @@ namespace VotingWebApi.Controllers
         }
 
         [HttpPost("{idVoting}/vote/{idProposal}")]
-        public async Task<ActionResult> Vote([FromRoute] int idVoting, [FromRoute] int idProposal)
+        public async Task<ActionResult> Vote([FromRoute] int idVoting, [FromRoute] string idProposal)
         {
+            var voting = await votingsRepository.GetById(idVoting);
+
+            if (voting == null)
+            {
+                return NotFound();
+            }
+
+            var voteCountMessage = new VoteCountByProposalFunction
+            {
+                IdProposal = idProposal
+            };
+
+            var queryHandler = web3.Eth.GetContractQueryHandler<VoteCountByProposalFunction>();
+
+            var voteCount = await queryHandler
+                .QueryAsync<int>(CONTRACT_ADDRESS, voteCountMessage)
+                .ConfigureAwait(false);
+
+            var votedProposal = voting.Proposals.Single(proposal => proposal.Id == idProposal);
+            votedProposal.VoteCount = voteCount;
+
+            await votingsRepository.Update(voting);
+
             return Ok();
         }
 

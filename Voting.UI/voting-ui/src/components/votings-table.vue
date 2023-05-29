@@ -15,7 +15,7 @@
           <tr>
             <th class="text-left">Name</th>
             <th class="text-left">Description</th>
-            <th class="text-left">Status</th>
+            <!-- <th class="text-left">Status</th> -->
             <th></th>
           </tr>
         </thead>
@@ -23,7 +23,7 @@
           <tr v-for="voting in votings" :key="voting.name">
             <td style="height: 100px">{{ voting.name }}</td>
             <td>{{ voting.description }}</td>
-            <td>{{ voting.state }}</td>
+            <!-- <td>{{ voting.state }}</td> -->
             <td class="text-right">
               <v-btn
                 icon="fas fa-arrow-right"

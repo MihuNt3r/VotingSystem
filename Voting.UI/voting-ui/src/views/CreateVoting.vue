@@ -139,9 +139,9 @@ export default {
 
           console.log({ createVotingTxn });
 
-          const idVoting = await createVotingTxn.wait();
+          await createVotingTxn.wait();
 
-          console.log("success", idVoting);
+          console.log("success");
 
           const model = {
             name: this.votingName,
