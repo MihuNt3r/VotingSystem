@@ -11,7 +11,9 @@
         </v-app-bar-title>
 
         <template v-slot:append>
-          <span v-if="currentAccount">Account: {{ currentAccount }}</span>
+          <span v-if="$store.getters.account"
+            >Account: {{ $store.getters.account }}</span
+          >
         </template>
       </v-app-bar>
       <v-row justify="center" class="mt-3">

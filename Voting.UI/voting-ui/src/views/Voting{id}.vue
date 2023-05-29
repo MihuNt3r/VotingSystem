@@ -20,18 +20,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="voting in votings" :key="voting.name">
+          <tr
+            v-for="voting in votings"
+            :key="voting.name"
+            @click="logItem(voting)"
+          >
             <td style="height: 100px">{{ voting.name }}</td>
             <td>{{ voting.description }}</td>
             <td>{{ voting.state }}</td>
-            <td class="text-right">
-              <v-btn
-                icon="fas fa-arrow-right"
-                size="large"
-                color="purple"
-                @click="openVoting(voting.id)"
-              ></v-btn>
-            </td>
+            <td><v-btn icon="fas fa-arrow-right" size="large"></v-btn></td>
           </tr>
         </tbody>
       </v-table>
@@ -57,11 +54,11 @@ export default {
     console.log(this.votings);
   },
   methods: {
+    logItem(item) {
+      console.log(item);
+    },
     createVoting() {
       this.$router.push({ path: "/newVoting" });
-    },
-    openVoting(id) {
-      console.log(id);
     },
   },
 };

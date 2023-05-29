@@ -9,12 +9,14 @@
         <v-app-bar-title class="text-h5">Secure Votings Dapp</v-app-bar-title>
 
         <template v-slot:append>
-          <span v-if="currentAccount">Account: {{ currentAccount }}</span>
+          <span v-if="$store.getters.account"
+            >Account: {{ $store.getters.account }}</span
+          >
         </template>
       </v-app-bar>
       <v-row justify="center" class="mt-3">
         <v-btn
-          v-if="!currentAccount"
+          v-if="!$store.getters.account"
           @click="connectWallet"
           color="purple"
           rounded="xl"
@@ -66,6 +68,8 @@ export default {
         const [account] = accounts;
 
         this.currentAccount = account;
+
+        this.$store.dispatch("setAccount", account);
       } catch (error) {
         console.log(error);
       }
