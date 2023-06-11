@@ -2,7 +2,7 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\projects\\VotingSystem\\Voting.SmartContract\\contracts\\VotingEngine.sol": {
-      "lastModificationDate": 1685302869560,
+      "lastModificationDate": 1685563111118,
       "contentHash": "d38870ec9f93de131147ccce23a853ec",
       "sourceName": "contracts/VotingEngine.sol",
       "solcConfig": {

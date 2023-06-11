@@ -15,15 +15,13 @@
           <tr>
             <th class="text-left">Name</th>
             <th class="text-left">Description</th>
-            <!-- <th class="text-left">Status</th> -->
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="voting in votings" :key="voting.name">
+          <tr v-for="voting in votings" :key="voting.id">
             <td style="height: 100px">{{ voting.name }}</td>
             <td>{{ voting.description }}</td>
-            <!-- <td>{{ voting.state }}</td> -->
             <td class="text-right">
               <v-btn
                 icon="fas fa-arrow-right"
@@ -44,17 +42,12 @@ const axios = require("axios");
 
 export default {
   name: "VotingsTable",
-  components: {
-    // HelloWorld,
-  },
   data: () => ({
     votings: [],
   }),
   async created() {
-    const response = await axios.get("http://localhost:21682/api/votings");
-
-    this.votings = response.data;
-    console.log(this.votings);
+    const { data } = await axios.get("http://localhost:21682/api/votings");
+    this.votings = data;
   },
   methods: {
     createVoting() {

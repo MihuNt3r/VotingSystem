@@ -16,60 +16,60 @@ namespace VotingWebApi.Controllers
     {
         private readonly VotingsRepository votingsRepository;
         private readonly Web3 web3;
-        private const string CONTRACT_ADDRESS = "0x74482b8FF7893dEC5Bd370637F656bE0A5025749";
+        private const string CONTRACT_ADDRESS = "0xc2227eddb18421241bc2eaff9c7273830b6b614f";
 
         public VotingsController()
         {
-            votingsRepository= new VotingsRepository();
+            votingsRepository = new VotingsRepository();
             web3 = new Web3("https://sepolia.infura.io/v3/ccd658afb4ff4d04b1891723bae0fb49");
         }
 
-        [HttpGet("{ethAddress}/balance")]
-        public async Task<ActionResult<BigInteger>> GetWalletBalance([FromRoute] string ethAddress)
-        {
-            var balance = await web3.Eth.GetBalance.SendRequestAsync(ethAddress);
+        //[HttpGet("{ethAddress}/balance")]
+        //public async Task<ActionResult<BigInteger>> GetWalletBalance([FromRoute] string ethAddress)
+        //{
+        //    var balance = await web3.Eth.GetBalance.SendRequestAsync(ethAddress);
 
-            return Ok(balance.Value);
-        }
+        //    return Ok(balance.Value);
+        //}
 
-        [HttpGet("{idProposal}/votes")]
-        public async Task<ActionResult<int>> GetVotesByProposal([FromRoute] string idProposal)
-        {
-            var voteCountMessage = new VoteCountByProposalFunction
-            {
-                IdProposal = idProposal
-            };
+        //[HttpGet("{idProposal}/votes")]
+        //public async Task<ActionResult<int>> GetVotesByProposal([FromRoute] string idProposal)
+        //{
+        //    var voteCountMessage = new VoteCountByProposalFunction
+        //    {
+        //        IdProposal = idProposal
+        //    };
 
-            var queryHandler = web3.Eth.GetContractQueryHandler<VoteCountByProposalFunction>();
+        //    var queryHandler = web3.Eth.GetContractQueryHandler<VoteCountByProposalFunction>();
 
-            var voteCount = await queryHandler
-                .QueryAsync<int>(CONTRACT_ADDRESS, voteCountMessage)
-                .ConfigureAwait(false);
+        //    var voteCount = await queryHandler
+        //        .QueryAsync<int>(CONTRACT_ADDRESS, voteCountMessage)
+        //        .ConfigureAwait(false);
 
-            return Ok(voteCount);
-        }
+        //    return Ok(voteCount);
+        //}
 
-        [HttpGet("{idVoting}/state")]
-        public async Task<ActionResult<int>> GetVoting([FromRoute] int idVoting)
-        {
-            var votingStatusMessage = new VotingStatusFunction
-            {
-                IdVoting = idVoting
-            };
+        //[HttpGet("{idVoting}/state")]
+        //public async Task<ActionResult<int>> GetVoting([FromRoute] int idVoting)
+        //{
+        //    var votingStatusMessage = new VotingStatusFunction
+        //    {
+        //        IdVoting = idVoting
+        //    };
 
-            var queryHandler = web3.Eth.GetContractQueryHandler<VotingStatusFunction>();
+        //    var queryHandler = web3.Eth.GetContractQueryHandler<VotingStatusFunction>();
 
-            var votingInfo = await queryHandler
-                .QueryDeserializingToObjectAsync<VotingStatusDto>(votingStatusMessage, CONTRACT_ADDRESS)
-                .ConfigureAwait(false);
+        //    var votingInfo = await queryHandler
+        //        .QueryDeserializingToObjectAsync<VotingStatusDto>(votingStatusMessage, CONTRACT_ADDRESS)
+        //        .ConfigureAwait(false);
 
-            var votingId = (int)votingInfo.VotingId;
-            var winningProposal = votingInfo.WinningProposal;
-            var state = (VotingState)votingInfo.State;
+        //    var votingId = (int)votingInfo.VotingId;
+        //    var winningProposal = votingInfo.WinningProposal;
+        //    var state = (VotingState)votingInfo.State;
 
-            return Ok(2);
-            //return Ok(voteCount);
-        }
+        //    return Ok(2);
+        //    //return Ok(voteCount);
+        //}
 
         [HttpGet("")]
         public async Task<ActionResult<IEnumerable<VotingDto>>> GetVotings()
@@ -159,11 +159,11 @@ namespace VotingWebApi.Controllers
             return Ok();
         }
 
-        [HttpPost("{idVoting}/end")]
-        public async Task<ActionResult> EndVoting([FromRoute] int idVoting)
-        {
-            return Ok();
-        }
+        //[HttpPost("{idVoting}/end")]
+        //public async Task<ActionResult> EndVoting([FromRoute] int idVoting)
+        //{
+        //    return Ok();
+        //}
 
         [HttpPost("{idVoting}/disable")]
         public async Task<ActionResult> DisableVoting([FromRoute] int idVoting)

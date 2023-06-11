@@ -33,11 +33,64 @@
         <v-col cols="3" v-for="proposal in voting.proposals" :key="proposal.id">
           <v-card class="mx-auto" max-width="344" variant="outlined">
             <v-card-item>
-              <div>
-                <div class="text-h6 mb-1 text-center">
-                  {{ proposal.proposal }}
-                </div>
-              </div>
+              <v-row>
+                <v-col>
+                  <v-spacer />
+                </v-col>
+                <v-col>
+                  <v-btn
+                    variant="filled"
+                    color="purple"
+                    size="small"
+                    @click="proposal.isBeingChecked = true"
+                  >
+                    Check fairness
+
+                    <v-dialog v-model="proposal.isBeingChecked" width="auto">
+                      <v-card>
+                        <v-card-text>
+                          To check fairness:
+                          <br />
+                          1.Click this button:
+                          <v-btn
+                            variant="filled"
+                            href="https://sepolia.etherscan.io/address/0xc2227eddb18421241bc2eaff9c7273830b6b614f#readContract"
+                            target="_blank"
+                            size="small"
+                          >
+                            Smart contract on Etherscan
+                          </v-btn>
+                          <br />
+                          2.Select section Contract, then select section Read
+                          Contract
+                          <br />
+                          3.Find function named voteCountByIdProposal and call
+                          it passing this unique Id:
+                          {{ proposal.id }}
+                          <br />
+                          4. You can ensure that vote count in blockchain
+                          matches current vote count
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn
+                            color="primary"
+                            block
+                            @click="proposal.isBeingChecked = false"
+                            >Close</v-btn
+                          >
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-btn>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <div class="text-h6 mb-1 text-center">
+                    {{ proposal.proposal }}
+                  </div>
+                </v-col>
+              </v-row>
             </v-card-item>
 
             <v-card-actions>
@@ -73,10 +126,11 @@ export default {
   name: "VotingsTable",
   data: () => ({
     voting: {},
-    contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
+    contractAddress: "0xc2227eddb18421241bc2eaff9c7273830b6b614f",
     contractAbi: abi.abi,
     isLoading: true,
     idProposalBeingVoted: null,
+    idProposalBeingChecked: null,
   }),
   async created() {
     await this.loadData();

@@ -93,14 +93,11 @@ const axios = require("axios");
 
 export default {
   name: "CreateVoting",
-  components: {
-    // HelloWorld,
-  },
   data: () => ({
     votingName: "",
     votingDescription: "",
     proposals: [],
-    contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
+    contractAddress: "0xc2227eddb18421241bc2eaff9c7273830b6b614f",
     contractAbi: abi.abi,
     createButtonLoading: false,
   }),
@@ -127,21 +124,13 @@ export default {
             signer
           );
 
-          console.log(votingContract);
-
           const proposalIds = this.proposals.map((p) => p.id);
-
-          console.log(proposalIds);
 
           const createVotingTxn = await votingContract.createVoting(
             proposalIds
           );
 
-          console.log({ createVotingTxn });
-
           await createVotingTxn.wait();
-
-          console.log("success");
 
           const model = {
             name: this.votingName,
@@ -151,8 +140,6 @@ export default {
               proposal: proposal.name,
             })),
           };
-
-          console.log(model);
 
           await axios.post("http://localhost:21682/api/votings", model);
 

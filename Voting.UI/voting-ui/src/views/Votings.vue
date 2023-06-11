@@ -33,7 +33,6 @@
   </v-app>
 </template>
 <script>
-import { ethers } from "ethers";
 import abi from "../../utils/VotingEngine.json";
 
 import VotingsTable from "@/components/votings-table.vue";
@@ -46,14 +45,11 @@ export default {
   },
 
   data: () => ({
-    currentAccount: null,
-    contractAddress: "0x74482b8FF7893dEC5Bd370637F656bE0A5025749",
+    contractAddress: "0xc2227eddb18421241bc2eaff9c7273830b6b614f",
     contractAbi: abi.abi,
   }),
   methods: {
     async connectWallet() {
-      console.log("started connecting wallet");
-
       try {
         const { ethereum } = window;
 
@@ -67,87 +63,9 @@ export default {
 
         const [account] = accounts;
 
-        this.currentAccount = account;
-
         this.$store.dispatch("setAccount", account);
       } catch (error) {
         console.log(error);
-      }
-    },
-
-    async createVoting() {
-      try {
-        const { ethereum } = window;
-
-        if (ethereum) {
-          // put this in created lifecycle hook
-          const provider = new ethers.providers.Web3Provider(ethereum, "any");
-          const signer = provider.getSigner();
-          const votingContract = new ethers.Contract(
-            this.contractAddress,
-            this.contractAbi,
-            signer
-          );
-
-          console.log(votingContract);
-
-          const createVotingTxn = await votingContract.createVoting([1, 2, 3]);
-
-          console.log({ createVotingTxn });
-
-          await createVotingTxn.wait();
-
-          console.log("success");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async logFirstVotingInfo() {
-      try {
-        const { ethereum } = window;
-
-        if (ethereum) {
-          const provider = new ethers.providers.Web3Provider(ethereum, "any");
-          const signer = provider.getSigner();
-          const votingContract = new ethers.Contract(
-            this.contractAddress,
-            this.contractAbi,
-            signer
-          );
-
-          console.log("fetching first voting from the blockchain..");
-
-          const voting = await votingContract.getVotingInfo(0);
-
-          console.log({ voting });
-          console.log("fetched!");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async voteFor3Proposal() {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum, "any");
-        const signer = provider.getSigner();
-        const votingContract = new ethers.Contract(
-          this.contractAddress,
-          this.contractAbi,
-          signer
-        );
-
-        const voteTxn = await votingContract.vote(0, 3);
-
-        console.log({ voteTxn });
-
-        await voteTxn.wait();
-
-        console.log("success");
       }
     },
   },
